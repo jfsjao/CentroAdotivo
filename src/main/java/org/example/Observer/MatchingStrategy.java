@@ -1,8 +1,8 @@
 package org.example.Observer;
 
+import org.example.Interface.IAnimal;
 import org.example.Classes.Adotante;
-import org.example.Interface.Animal;
 
 public interface MatchingStrategy {
-    boolean match(Animal animal, Adotante adotante);
+    boolean match(IAnimal animal, Adotante adotante);
 }

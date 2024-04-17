@@ -2,7 +2,6 @@ package org.example.Notificador;
 
 import org.example.Observer.Observer;
 import org.example.Observer.Subject;
-
 import java.util.ArrayList;
 import java.util.List;
 

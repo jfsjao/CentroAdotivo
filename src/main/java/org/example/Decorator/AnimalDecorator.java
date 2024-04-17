@@ -1,11 +1,11 @@
 package org.example.Decorator;
 
-import org.example.Interface.Animal;
+import org.example.Interface.IAnimal;
 
-public abstract class AnimalDecorator implements Animal {
-    protected Animal animalDecorado;
+public abstract class AnimalDecorator implements IAnimal {
+    protected IAnimal animalDecorado;
 
-    public AnimalDecorator(Animal animal) {
+    public AnimalDecorator(IAnimal animal) {
         this.animalDecorado = animal;
     }
 

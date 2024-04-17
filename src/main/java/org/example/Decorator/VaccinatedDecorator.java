@@ -1,10 +1,10 @@
 package org.example.Decorator;
 
-import org.example.Interface.Animal;
+import org.example.Interface.IAnimal;
 
 public class VaccinatedDecorator extends AnimalDecorator {
 
-    public VaccinatedDecorator(Animal animal) {
+    public VaccinatedDecorator(IAnimal animal) {
         super(animal);
     }
 

@@ -1,6 +1,6 @@
 package org.example.Interface;
 
-public interface Animal {
+public interface IAnimal {
     String getId();
     void setId(String id);
     String getEspecie();
