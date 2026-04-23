@@ -1,29 +1,33 @@
 package org.example.Service;
 
 import org.example.Classes.Adotante;
-import org.example.Classes.GestaoAdocao;
 import org.example.Factory.AdotanteFactory;
+import org.example.Interface.AdocaoRepository;
+import org.example.Interface.AnimalRepository;
 import org.example.Interface.IAnimal;
+import org.example.Observer.Subject;
 
 public class AdocaoService {
-    private final GestaoAdocao gestaoAdocao;
+    private final AnimalRepository animalRepository;
+    private final AdocaoRepository adocaoRepository;
+    private final Subject subject;
 
-    public AdocaoService(GestaoAdocao gestaoAdocao) {
-        this.gestaoAdocao = gestaoAdocao;
+    public AdocaoService(AnimalRepository animalRepository, AdocaoRepository adocaoRepository, Subject subject) {
+        this.animalRepository = animalRepository;
+        this.adocaoRepository = adocaoRepository;
+        this.subject = subject;
     }
 
     public String realizarAdocao(String adotanteId, String nome, String endereco, String especiePreferida) {
         validarEspecie(especiePreferida);
 
         Adotante adotante = AdotanteFactory.criarAdotante(adotanteId, nome, endereco, especiePreferida);
-        gestaoAdocao.registrarAdotante(adotante);
+        subject.addObserver(adotante);
 
-        for (IAnimal animal : gestaoAdocao.getAnimaisDisponiveis()) {
-            if (animal.getEspecie().equalsIgnoreCase(especiePreferida)
-                    && gestaoAdocao.realizarAdocao(
-                    animal,
-                    adotante,
-                    (animalDisponivel, adotanteAtual) -> animalDisponivel.getEspecie().equals(adotanteAtual.getPreferenciaEspecie()))) {
+        for (IAnimal animal : animalRepository.listar()) {
+            if (animal.getEspecie().equalsIgnoreCase(especiePreferida) && !adocaoRepository.existeParaAnimal(animal.getId())) {
+                adocaoRepository.salvar(animal.getId(), adotante.getId());
+                System.out.println("Match realizado com sucesso entre " + adotante.getNome() + " e o animal: " + animal.getDescricao() + ".");
                 return animal.getDescricao();
             }
         }

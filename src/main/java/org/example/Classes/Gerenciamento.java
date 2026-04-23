@@ -1,5 +1,7 @@
 package org.example.Classes;
 
+import org.example.Repository.InMemoryAdocaoRepository;
+import org.example.Repository.InMemoryAnimalRepository;
 import org.example.Service.AdocaoService;
 import org.example.Service.AnimalService;
 
@@ -13,9 +15,14 @@ public class Gerenciamento {
 
     public Gerenciamento() {
         GestaoAdocao gestaoAdocao = GestaoAdocao.getInstance();
+        InMemoryAnimalRepository animalRepository = new InMemoryAnimalRepository();
+        InMemoryAdocaoRepository adocaoRepository = new InMemoryAdocaoRepository();
+
+        gestaoAdocao.configurarRepositorioAdocao(adocaoRepository);
         gestaoAdocao.addObserver(message -> System.out.println("Notifica\u00E7\u00E3o: " + message));
-        this.animalService = new AnimalService(gestaoAdocao);
-        this.adocaoService = new AdocaoService(gestaoAdocao);
+
+        this.animalService = new AnimalService(animalRepository, gestaoAdocao, gestaoAdocao);
+        this.adocaoService = new AdocaoService(animalRepository, adocaoRepository, gestaoAdocao);
     }
 
     public void iniciar() {

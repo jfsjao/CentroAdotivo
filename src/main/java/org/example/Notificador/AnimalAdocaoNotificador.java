@@ -30,6 +30,6 @@ public class AnimalAdocaoNotificador implements Subject {
 
     // Metodo auxiliar para adicionar a funcionalidade especifica de notificacao de novos animais
     public void novoAnimalDisponivel(String descricaoAnimal) {
-        notifyObservers("Novo animal dispon\u00EDvel para ado\u00E7\u00E3o: " + descricaoAnimal);
+        notifyObservers("Novo animal disponível para adoção: " + descricaoAnimal);
     }
 }
