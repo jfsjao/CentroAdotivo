@@ -1,20 +1,21 @@
 package org.example.Classes;
 
-import org.example.Factory.AdotanteFactory;
-import org.example.Factory.AnimalFactory;
-import org.example.Decorator.VaccinatedDecorator;
-import org.example.Interface.IAnimal;
+import org.example.Service.AdocaoService;
+import org.example.Service.AnimalService;
 
 import java.util.Scanner;
 
 public class Gerenciamento {
 
     private final Scanner scanner = new Scanner(System.in);
-    private final GestaoAdocao gestaoAdocao;
+    private final AnimalService animalService;
+    private final AdocaoService adocaoService;
 
     public Gerenciamento() {
-        this.gestaoAdocao = GestaoAdocao.getInstance();
-        this.gestaoAdocao.addObserver(message -> System.out.println("Notificação: " + message));
+        GestaoAdocao gestaoAdocao = GestaoAdocao.getInstance();
+        gestaoAdocao.addObserver(message -> System.out.println("Notifica\u00E7\u00E3o: " + message));
+        this.animalService = new AnimalService(gestaoAdocao);
+        this.adocaoService = new AdocaoService(gestaoAdocao);
     }
 
     public void iniciar() {
@@ -23,14 +24,14 @@ public class Gerenciamento {
             printMenu();
             String input = scanner.nextLine().trim();
             if (input.isEmpty()) {
-                System.out.println("Opção inválida, tente novamente.");
+                System.out.println("Op\u00E7\u00E3o inv\u00E1lida, tente novamente.");
                 continue;
             }
             int action;
             try {
                 action = Integer.parseInt(input);
             } catch (NumberFormatException e) {
-                System.out.println("Opção inválida, tente novamente.");
+                System.out.println("Op\u00E7\u00E3o inv\u00E1lida, tente novamente.");
                 continue;
             }
             switch (action) {
@@ -53,7 +54,7 @@ public class Gerenciamento {
                     quit = true;
                     break;
                 default:
-                    System.out.println("Opção inválida, tente novamente.");
+                    System.out.println("Op\u00E7\u00E3o inv\u00E1lida, tente novamente.");
             }
         }
     }
@@ -61,43 +62,31 @@ public class Gerenciamento {
     private void printMenu() {
         System.out.println("\nMenu:");
         System.out.println("1 - Adicionar Animal");
-        System.out.println("2 - Realizar Adoção");
+        System.out.println("2 - Realizar Ado\u00E7\u00E3o");
         System.out.println("3 - Deletar Animal");
         System.out.println("4 - Vacinar Animal");
         System.out.println("5 - Listar Animais");
         System.out.println("6 - Sair");
-        System.out.print("Escolha uma opção: ");
+        System.out.print("Escolha uma op\u00E7\u00E3o: ");
     }
 
-
     private void addAnimal() {
-        System.out.print("Digite o ID do animal (apenas números): ");
+        System.out.print("Digite o ID do animal (apenas n\u00FAmeros): ");
         String id = scanner.nextLine();
-        if (!id.matches("\\d+")) {
-            System.out.println("ID inválido, deve conter apenas números.");
-            return;
-        }
-
-        System.out.print("Digite a espécie do animal (cão ou gato): ");
+        System.out.print("Digite a esp\u00E9cie do animal (c\u00E3o ou gato): ");
         String especie = scanner.nextLine();
-        if (!especie.equalsIgnoreCase("cão") && !especie.equalsIgnoreCase("gato")) {
-            System.out.println("Espécie inválida, deve ser 'cão' ou 'gato'.");
-            return;
-        }
-
-        System.out.print("Digite a raça do animal: ");
+        System.out.print("Digite a ra\u00E7a do animal: ");
         String raca = scanner.nextLine();
-        System.out.print("Digite a idade do animal (apenas números): ");
-        int idade;
-        try {
-            idade = Integer.parseInt(scanner.nextLine());
-        } catch (NumberFormatException e) {
-            System.out.println("Idade inválida, deve conter apenas números.");
-            return;
-        }
+        System.out.print("Digite a idade do animal (apenas n\u00FAmeros): ");
 
-        Animal animal = AnimalFactory.criarAnimal(id, especie, raca, idade);
-        gestaoAdocao.adicionarAnimal(animal);
+        try {
+            int idade = Integer.parseInt(scanner.nextLine());
+            animalService.adicionarAnimal(id, especie, raca, idade);
+        } catch (NumberFormatException e) {
+            System.out.println("Idade inv\u00E1lida, deve conter apenas n\u00FAmeros.");
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private void adoptAnimal() {
@@ -105,38 +94,27 @@ public class Gerenciamento {
         String adotanteId = scanner.nextLine();
         System.out.print("Digite o nome do adotante: ");
         String nome = scanner.nextLine();
-        System.out.print("Digite o endereço do adotante: ");
+        System.out.print("Digite o endere\u00E7o do adotante: ");
         String endereco = scanner.nextLine();
-        System.out.print("Digite a espécie preferida para adoção (cão ou gato): ");
+        System.out.print("Digite a esp\u00E9cie preferida para ado\u00E7\u00E3o (c\u00E3o ou gato): ");
         String especiePreferida = scanner.nextLine();
-        if (!especiePreferida.equalsIgnoreCase("cão") && !especiePreferida.equalsIgnoreCase("gato")) {
-            System.out.println("Espécie inválida, deve ser 'cão' ou 'gato'.");
-            return;
-        }
 
-        Adotante adotante = AdotanteFactory.criarAdotante(adotanteId, nome, endereco, especiePreferida);
-        gestaoAdocao.registrarAdotante(adotante);
-
-        boolean matchFound = false;
-        for (IAnimal animal : gestaoAdocao.getAnimaisDisponiveis()) {
-            if (animal.getEspecie().equalsIgnoreCase(especiePreferida)) {
-                if (gestaoAdocao.realizarAdocao(animal, adotante, (a, b) -> a.getEspecie().equals(b.getPreferenciaEspecie()))) {
-                    System.out.println("Adoção realizada com sucesso para o animal: " + animal.getDescricao());
-                    matchFound = true;
-                    break;
-                }
+        try {
+            String animalAdotado = adocaoService.realizarAdocao(adotanteId, nome, endereco, especiePreferida);
+            if (animalAdotado != null) {
+                System.out.println("Ado\u00E7\u00E3o realizada com sucesso para o animal: " + animalAdotado);
+            } else {
+                System.out.println("N\u00E3o h\u00E1 animais dispon\u00EDveis que correspondam \u00E0 esp\u00E9cie preferida.");
             }
-        }
-
-        if (!matchFound) {
-            System.out.println("Não há animais disponíveis que correspondam à espécie preferida.");
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
         }
     }
 
     private void deleteAnimal() {
         System.out.print("Digite o ID do animal a ser deletado: ");
         String animalId = scanner.nextLine();
-        if (gestaoAdocao.deletarAnimal(animalId)) {
+        if (animalService.deletarAnimal(animalId)) {
             System.out.println("Animal deletado com sucesso.");
         } else {
             System.out.println("Falha ao deletar o animal, pode estar vinculado a um adotante.");
@@ -146,23 +124,17 @@ public class Gerenciamento {
     private void vaccinateAnimal() {
         System.out.print("Digite o ID do animal a ser vacinado: ");
         String animalId = scanner.nextLine();
-        IAnimal animal = gestaoAdocao.buscarAnimal(animalId);
-        if (animal != null) {
-            // Criando o decorador e atualizando o objeto IAnimal diretamente
-            IAnimal decoratedAnimal = new VaccinatedDecorator(animal);
-            // Atualizando a lista de animais disponíveis com o objeto decorado
-            gestaoAdocao.getAnimaisDisponiveis().remove(animal);
-            gestaoAdocao.getAnimaisDisponiveis().add(decoratedAnimal);
+        if (animalService.vacinarAnimal(animalId)) {
             System.out.println("Animal vacinado com sucesso.");
         } else {
-            System.out.println("Animal não encontrado.");
+            System.out.println("Animal n\u00E3o encontrado.");
         }
     }
 
     private void listAnimais() {
-        System.out.println("\nLista de Animais Disponíveis:");
-        for (IAnimal animal : gestaoAdocao.getAnimaisDisponiveis()) {
-            System.out.println(animal.getDescricao());
+        System.out.println("\nLista de Animais Dispon\u00EDveis:");
+        for (String descricaoAnimal : animalService.listarAnimaisDisponiveis()) {
+            System.out.println(descricaoAnimal);
         }
     }
 }

@@ -37,6 +37,6 @@ public class Adotante implements Observer {
 
     @Override
     public void update(String message) {
-        System.out.println("Notificação para " + nome + ": " + message);
+        System.out.println("Notifica\u00E7\u00E3o para " + nome + ": " + message);
     }
 }

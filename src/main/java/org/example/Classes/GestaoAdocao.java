@@ -1,15 +1,16 @@
 package org.example.Classes;
 
 import org.example.Interface.IAnimal;
+import org.example.Observer.MatchingStrategy;
 import org.example.Observer.Observer;
 import org.example.Observer.Subject;
-import org.example.Observer.MatchingStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 public class GestaoAdocao implements Subject {
-    private static GestaoAdocao instance;  // Única instância
+    private static GestaoAdocao instance;  // Unica instancia
 
     private List<Observer> observers = new ArrayList<>();
     private List<IAnimal> animaisDisponiveis = new ArrayList<>();
@@ -28,13 +29,14 @@ public class GestaoAdocao implements Subject {
         if (animaisDisponiveis.stream().noneMatch(a -> a.getId().equals(animal.getId()))) {
             animaisDisponiveis.add(animal);
             notifyObservers("Novo animal disponível para adoção: " + animal.getDescricao());
+            notifyObservers("Novo animal dispon\u00EDvel para ado\u00E7\u00E3o: " + animal.getDescricao());
         } else {
-            System.err.println("Erro: ID do animal já está em uso.");
+            System.err.println("Erro: ID do animal j\u00E1 est\u00E1 em uso.");
         }
     }
 
     public List<IAnimal> getAnimaisDisponiveis() {
-        return new ArrayList<>(animaisDisponiveis);  // Retorna uma cópia para evitar manipulação direta
+        return new ArrayList<>(animaisDisponiveis);  // Retorna uma copia para evitar manipulacao direta
     }
 
     public boolean realizarAdocao(IAnimal animal, Adotante adotante, MatchingStrategy strategy) {
@@ -52,7 +54,7 @@ public class GestaoAdocao implements Subject {
             System.out.println("Animal deletado com sucesso.");
             return true;
         } else {
-            System.err.println("Erro: Animal não pode ser deletado, ainda está vinculado.");
+            System.err.println("Erro: Animal n\u00E3o pode ser deletado, ainda est\u00E1 vinculado.");
             return false;
         }
     }
@@ -75,7 +77,19 @@ public class GestaoAdocao implements Subject {
                 return animal;
             }
         }
-        return null; // Retorna null se o animal não for encontrado
+        return null; // Retorna null se o animal nao for encontrado
+    }
+
+    public boolean atualizarAnimal(String animalId, IAnimal animalAtualizado) {
+        ListIterator<IAnimal> iterator = animaisDisponiveis.listIterator();
+        while (iterator.hasNext()) {
+            IAnimal animalAtual = iterator.next();
+            if (animalAtual.getId().equals(animalId)) {
+                iterator.set(animalAtualizado);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
