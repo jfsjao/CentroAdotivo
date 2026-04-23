@@ -7,12 +7,14 @@ public class Animal implements IAnimal {
     private String especie;
     private String raca;
     private int idade;
+    private boolean vacinado;
 
     public Animal(String id, String especie, String raca, int idade) {
         this.id = id;
         this.especie = especie;
         this.raca = raca;
         this.idade = idade;
+        this.vacinado = false;
     }
 
     @Override
@@ -56,7 +58,21 @@ public class Animal implements IAnimal {
     }
 
     @Override
+    public boolean isVacinado() {
+        return vacinado;
+    }
+
+    @Override
+    public void vacinar() {
+        this.vacinado = true;
+    }
+
+    @Override
     public String getDescricao() {
-        return especie + " " + raca + ", " + idade + " anos";
+        String descricao = especie + " " + raca + ", " + idade + " anos";
+        if (vacinado) {
+            descricao += ", vacinado";
+        }
+        return descricao;
     }
 }

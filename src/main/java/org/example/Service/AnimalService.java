@@ -2,7 +2,6 @@ package org.example.Service;
 
 import org.example.Classes.Animal;
 import org.example.Classes.GestaoAdocao;
-import org.example.Decorator.VaccinatedDecorator;
 import org.example.Factory.AnimalFactory;
 import org.example.Interface.IAnimal;
 
@@ -34,8 +33,8 @@ public class AnimalService {
             return false;
         }
 
-        IAnimal animalVacinado = new VaccinatedDecorator(animal);
-        return gestaoAdocao.atualizarAnimal(animalId, animalVacinado);
+        animal.vacinar();
+        return true;
     }
 
     public List<String> listarAnimaisDisponiveis() {

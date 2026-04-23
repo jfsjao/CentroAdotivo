@@ -9,5 +9,7 @@ public interface IAnimal {
     void setRaca(String raca);
     int getIdade();
     void setIdade(int idade);
+    boolean isVacinado();
+    void vacinar();
     String getDescricao();
 }
